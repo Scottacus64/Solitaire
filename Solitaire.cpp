@@ -35,15 +35,15 @@ void Solitaire::dealGame()
         {
             if (col == row)                         // if it is the last card in a cardCol
             {
-                Card c = solitaireDeck.deal();
-                int id = c.getID();
-                c.flipCard();                       // flip the card over to show its top side
-                cardCol[col].addCard(c);
+                Card* pCard = solitaireDeck.deal();
+                int id = pCard->getID();
+                pCard->flipCard();                       // flip the card over to show its top side
+                cardCol[col].addCard(pCard);
             }
             else if (col > row)                     // if it is not the last card in a cardCol
             {
-                Card c = solitaireDeck.deal();
-                cardCol[col].addCard(c);
+                Card* pCard = solitaireDeck.deal();
+                cardCol[col].addCard(pCard);
             }
         }
     }   
@@ -85,8 +85,8 @@ void Solitaire::printField()
         {
             if (row < cardCol[col].getSize())
             {
-                Card* p_c = cardCol[col].getCard(row);
-                cardArray[col]= p_c;
+                Card* pCard = cardCol[col].getCard(row);
+                cardArray[col]= pCard;
                 emptyRow = false;
             }
             else
@@ -98,8 +98,11 @@ void Solitaire::printField()
         {
             for (int i=0; i<7; i++)
             {
-                Card* p_c = cardArray[i];
-                if (p_c != nullptr){p_c->printCard();}
+                Card* pCard = cardArray[i];
+                if (pCard)
+                {
+                    pCard->printCard();
+                }
 
                 cout << "\t";
             }
@@ -113,12 +116,12 @@ void Solitaire::printField()
 Card* Solitaire::getTopDrawPileCard()
 {
     cout << "GTCDP deck = " << &drawPile << endl;;
-    Card* p_c = drawPile.getTopDeckCard();
+    Card* pCard = drawPile.getTopDeckCard();
     drawPile.printTopCard();
-    cout << "***** GTCDP Card Address = " << &p_c << "\n\n";
-    int id = p_c->getID();
+    cout << "***** GTCDP Card Address = " << pCard << "\n\n";
+    int id = pCard->getID();
     cout << "****** GTDPC id = " << id << endl;;
-    return p_c;
+    return pCard;
 }
 
 
@@ -206,21 +209,21 @@ int Solitaire::cycleDeck()
         std::cout << "i = " << i;
         if (solitaireDeck.cardsLeft() > 0)
         {
-            Card c = solitaireDeck.deal();          // get and remove the Card object from the solitaireDeck
-            c.flipFaceUp();                         // set it's face up bool to true
-            int id = c.getID();
-            Card* p_c = &c;
+            Card* pCard = solitaireDeck.deal();          // get and remove the Card object from the solitaireDeck
+            pCard->flipFaceUp();                         // set it's face up bool to true
+            int id = pCard->getID();
+
             cout << "\nthe card delt's id is " << id << endl;;
-            cout << "\nthe card delt face up is " << c.getFaceUp() << endl;;
-            cout << "the delt cards address is " << &p_c << endl;;
-            drawPile.addCard(c);                    // add the Card object to the deck drawPile
+            cout << "\nthe card delt face up is " << pCard->getFaceUp() << endl;;
+            cout << "the delt cards address is " << pCard << endl;;
+            drawPile.addCard(pCard);                    // add the Card object to the deck drawPile
             dpFlipUp ++;                            // this shows how many cards in the dp are flipped up and ready to play
             cardsDelt ++;
-            c.printCard();
+            pCard->printCard();
             cout << " ######## draw pile size: " << dpSize << endl;;
         }
-        Card* p_c = drawPile.getTopDeckCard();
-        int id = p_c->getID();
+        Card* pCard = drawPile.getTopDeckCard();
+        int id = pCard->getID();
         cout << "Card Cycle id of top card: " << id << endl;;
     }
     
@@ -243,7 +246,7 @@ int Solitaire::cycleDeck()
  *          This is the setion that looks over the ID number and suit of a card sent to it         
  *          to check if that card can be played on either a column or the aces above         
 ********************************************************************************************/
-bool Solitaire::checkCanMove(Card* p_c, int col, int row, bool lastCard, bool lastUnflippedCard)
+bool Solitaire::checkCanMove(Card* pCard, int col, int row, bool lastCard, bool lastUnflippedCard)
 {
     bool cardRed;
     bool columnRed;
@@ -254,13 +257,13 @@ bool Solitaire::checkCanMove(Card* p_c, int col, int row, bool lastCard, bool la
     bool aceMatch = false;
 
     possibleMoves.clear();
-    cout << "CheckCanMove's Card address is: " << &p_c << endl;;
-    bool fu = p_c->getFaceUp();
+    cout << "CheckCanMove's Card address is: " << pCard << endl;;
+    bool fu = pCard->getFaceUp();
     cout << "the card in checkCanMove's facuUp value is: "  << fu << endl;;
 
-    if (p_c->getFaceUp() == true)                   // if the card is not flipped up, disregard it
+    if (pCard->getFaceUp() == true)                   // if the card is not flipped up, disregard it
     {
-        int id = p_c->getID();                      // from the card's ID, face value and suit
+        int id = pCard->getID();                      // from the card's ID, face value and suit
         cout << "CheckPosMoves id = " << id << endl;;
 
         /********  check if the same card was clicked again  *******/
@@ -284,8 +287,8 @@ bool Solitaire::checkCanMove(Card* p_c, int col, int row, bool lastCard, bool la
         possibleMoves.clear();                      // clear out possible moves now that we've passed the checks
         lastCardClicked = id;                       // set an id to check next click to see if the same card is clicked
 
-        int cardValue = p_c->getFaceValue();         
-        char suit = p_c->getSuit();
+        int cardValue = pCard->getFaceValue();
+        char suit = pCard->getSuit();
 
         cout << "IN CheckPossMoves CardValue = " << cardValue << " suit = " << suit << endl;;
 
@@ -372,7 +375,7 @@ bool Solitaire::checkCanMove(Card* p_c, int col, int row, bool lastCard, bool la
         if (destination > 9 && aceFlag == false)    
         {
             int suit = (destination/10)-1;          // calculate the suit from the x10 value     
-            aceStackMove(col, row, suit, p_c, lastCard);    // move the card to the ace stack   
+            aceStackMove(col, row, suit, pCard, lastCard);    // move the card to the ace stack
             aceMatch = true;                        
         }
         /********* this checks for moving to a cardColumn **********/
@@ -407,8 +410,8 @@ void Solitaire::moveToColumn(int destinationCol, int col, int slot, bool lastUnf
         for (int i= slot; i<colSize; i++)                    // take each card from the selected card to the end
         {
             std:: cout << "ROW: " << i << endl;;
-            Card c = cardCol[col].removeCard(slot);                  // remove it from the sorce and..
-            cardCol[destinationCol].addCard(c);                      // add it to the destination
+            Card* pCard = cardCol[col].removeCard(slot);                  // remove it from the sorce and..
+            cardCol[destinationCol].addCard(pCard);                      // add it to the destination
         }
         int colLength = cardCol[col].getSize();
         cout << "after moving cards colLength = " << colLength << endl;;
@@ -442,8 +445,8 @@ void Solitaire::playFromDrawPile(int col)
     std::cout << "In playFromDrawPile Draw Pile Size = " << dpFlipUp << "\n"; 
     if(dpFlipUp > 0) 
     {      
-        Card c = drawPile.deal();
-        cardCol[col].addCard(c);
+        Card* pCard = drawPile.deal();
+        cardCol[col].addCard(pCard);
         dpFlipUp --;
         int dpSize = drawPile.cardsLeft();
         std::cout << "dpFlipUp = " << dpFlipUp << " dpSize = " << dpSize << "\n\n"; 
@@ -475,33 +478,31 @@ void Solitaire::playFromAces(int col, int suit)
 {
     cout << "In Play from Aces\n";
     int size = Aces[suit].getSize();
-    Card c = Aces[suit].removeCard(size-1);
-    cardCol[col].addCard(c);  
+    Card* pCard = Aces[suit].removeCard(size-1);
+    cardCol[col].addCard(pCard);
     moves ++;
 }
 
 
-void Solitaire::aceStackMove(int col, int row, int suit, Card* p_c, bool lastCard)
+void Solitaire::aceStackMove(int col, int row, int suit, Card* pCard, bool lastCard)
 {
-    Card inCard = *p_c;
-
     cout << "In AceStackMove Suit = " << suit << " Col = " << col << " Row = " << row << endl;;
     cout << "Incomming card is: ";
-    inCard.printCard();
+    pCard->printCard();
     cout << "\n";
 
-    Card c;
+    Card* pTmpCard;
     if (col<100)
     {      
-        c = removeForAce(col, row);                     // remove the card from the cardCol    
+        pTmpCard = removeForAce(col, row);                     // remove the card from the cardCol
     }
     else
     {
-        c = drawPile.deal();
+        pTmpCard = drawPile.deal();
         dpFlipUp --;
         if (dpFlipUp == 0){flipThreeDP();}
     }
-    Aces[suit].addCard(c);                              // move the card to the Ace stack
+    Aces[suit].addCard(pTmpCard);                              // move the card to the Ace stack
     aceFlag = true;
 
     win = true;                                         // this checks for the win condition
@@ -516,34 +517,34 @@ void Solitaire::aceStackMove(int col, int row, int suit, Card* p_c, bool lastCar
 
 
 
-Card Solitaire::removeColCard(int col, int row, bool lastCard)
+Card* Solitaire::removeColCard(int col, int row, bool lastCard)
 {
-    Card c;
+    Card* pCard;
     int length = getColumnSize(col);
         cout << "** RemoveColCard row = " << row << " length = " << length << endl;;
     for (int slot=row; slot<length; slot++)             // remove each card from the column
     {
-        c = cardCol[col].removeCard(slot);
+        pCard = cardCol[col].removeCard(slot);
     }
 
     if (row > 0 && lastCard == true)
     {
-        Card* p_c = cardCol[col].getCard(row-1);
-        p_c->flipFaceUp();
+        Card* pTempCard = cardCol[col].getCard(row-1);
+        pTempCard->flipFaceUp();
     }
-    return c;
+    return pCard;
  }
 
 
- Card Solitaire::removeForAce(int col,int row)
+ Card* Solitaire::removeForAce(int col,int row)
  {
-    Card c = cardCol[col].removeCard(row);
+    Card* pCard = cardCol[col].removeCard(row);
     if (row > 0)
     {
-        Card* p_c = cardCol[col].getCard(row-1);
-        p_c->flipFaceUp();
+        Card* pTempCard = cardCol[col].getCard(row-1);
+        pTempCard->flipFaceUp();
     }
-    return c;
+    return pCard;
  }
 
 
@@ -552,10 +553,10 @@ Card Solitaire::removeColCard(int col, int row, bool lastCard)
     int pileSize = drawPile.cardsLeft();
     for (int i=0; i<pileSize; i++)
     {
-        Card c = drawPile.deal();
+        Card* pCard = drawPile.deal();
         dpSize --;
-        c.setFaceUp(false);
-        solitaireDeck.addCard(c);
+        pCard->setFaceUp(false);
+        solitaireDeck.addCard(pCard);
     }
  }
 
@@ -598,10 +599,10 @@ Card Solitaire::removeColCard(int col, int row, bool lastCard)
             }
         }
         int row = cardCol[lowestColumn].getSize() - 1;
-        Card c = cardCol[lowestColumn].removeCard(row); 
-        int ID = c.getID();
+        Card* pCard = cardCol[lowestColumn].removeCard(row);
+        int ID = pCard->getID();
         int suit = ID/14;
-        Aces[suit].addCard(c); 
+        Aces[suit].addCard(pCard);
         return false;
     }
     else
@@ -621,10 +622,9 @@ void Solitaire::printNode(Solitaire::GameNode* node)
     std::cout << "\n\n     Node pointer: " << node << "\n";
     for (int i=0; i<52;  i++)
     {
-        Card* p_Card = node->gameState[i].pCard;
-        Card card = *p_Card;
-        std::cout << "Pointer: " << p_Card << " *****************\n";
-        std::cout << "Card " << i << ":" << card.getID() <<"\n";
+        Card* pCard = node->gameState[i].pCard;
+        std::cout << "Pointer: " << pCard << " *****************\n";
+        std::cout << "Card " << i << ":" << pCard->getID() <<"\n";
         std::cout << "faceUp: " << node->gameState[i].faceUp << "\n";
         int cSlot = node->gameState[i].slot;
         std::cout << "location: " << cSlot << "\n";
@@ -653,12 +653,11 @@ void Solitaire::saveGameState()
             if (j < aceLen)
             {
                 Card* pCard = Aces[i].getCard(j);       // get the Card objecrt
-                if (pCard != nullptr)
+                if (pCard)
                 {
-                    Card cCard = *pCard;
                     CardState sCard;
                     sCard.pCard = pCard;                // set the struct's pointer, faceUp and locations
-                    sCard.faceUp = cCard.getFaceUp();
+                    sCard.faceUp = pCard->getFaceUp();
                     sCard.slot = j + (i * 13);
                     newNode->gameState[cardSlot] = sCard;   // put the struct in the node being built
                     cardSlot ++;
@@ -675,12 +674,11 @@ void Solitaire::saveGameState()
             if (j < colLen)                             // if the column has a card in this slot then...
             {
                 Card* pCard = cardCol[i].getCard(j);
-                if (pCard != nullptr)
+                if (pCard)
                 {
-                    Card cCard = *pCard;
                     CardState sCard;
                     sCard.pCard = pCard;                
-                    sCard.faceUp = cCard.getFaceUp();
+                    sCard.faceUp = pCard->getFaceUp();
                     sCard.slot = 52 + j + (i*19);       
                     newNode->gameState[cardSlot] = sCard;
                     cardSlot ++;
@@ -695,12 +693,11 @@ void Solitaire::saveGameState()
         if (i < sdLen)
         {
             Card* pCard = solitaireDeck.getDeckCardAt(i);
-            if (pCard != nullptr)
+            if (pCard)
             {
-                Card cCard = *pCard;
                 CardState sCard;
                 sCard.pCard = pCard;
-                sCard.faceUp = cCard.getFaceUp();
+                sCard.faceUp = pCard->getFaceUp();
                 sCard.slot = 185 + i;
                 newNode->gameState[cardSlot] = sCard;
                 cardSlot ++;
@@ -714,12 +711,11 @@ void Solitaire::saveGameState()
         if (i < dLen)
         {
             Card* pCard = drawPile.getDeckCardAt(i);
-            if (pCard != nullptr)
+            if (pCard)
             {
-                Card cCard = *pCard;
                 CardState sCard;
                 sCard.pCard = pCard;
-                sCard.faceUp = cCard.getFaceUp();
+                sCard.faceUp = pCard->getFaceUp();
                 sCard.slot = 211 + i;
                 newNode->gameState[cardSlot] = sCard;
                 cardSlot ++;
@@ -748,29 +744,26 @@ void Solitaire::loadGameState()
             for (int i=0; i<7; i++){cardCol[i].clearHand();}
             solitaireDeck.eraseDeck();
             drawPile.eraseDeck();
-            Card* p_Card;
-            Card  cCard;
             for (int i=0; i<52; i++)                            // go through all 52 cards in the game
             {
-                p_Card = head->gameState[i].pCard;              // get the Card
-                cCard = *p_Card;
-                cCard.setFaceUp(head->gameState[i].faceUp);     // its faceUp value
+                Card* pCard = head->gameState[i].pCard;              // get the Card
+                pCard->setFaceUp(head->gameState[i].faceUp);     // its faceUp value
                 int cSlot = head->gameState[i].slot;            // where it is located       
                 if (cSlot<52)                                                   // check if it's in the Aces stacks
                     {
-                        Aces[cSlot/13].addCardAt(cCard, cSlot%13);
+                        Aces[cSlot/13].addCardAt(pCard, cSlot%13);
                     }
                 else if (cSlot < 185)                                           // or card calumns
                     {
-                        cardCol[(cSlot-52)/19].addCardAt(cCard, (cSlot-52)%19);
+                        cardCol[(cSlot-52)/19].addCardAt(pCard, (cSlot-52)%19);
                     }
                 else if (cSlot < 211)                                           // or Dealing Deck
                     {   
-                        solitaireDeck.addCardAt(cCard, (cSlot-185)%26);
+                        solitaireDeck.addCardAt(pCard, (cSlot-185)%26);
                     }
                 else                                                            // or Draw Pile
                     {
-                        drawPile.addCardAt(cCard, (cSlot-211)%26);
+                        drawPile.addCardAt(pCard, (cSlot-211)%26);
                     }
             }
         }

@@ -59,7 +59,7 @@ void Deck::makeDeck()
                 pv = " K";
                 break;
             }
-            m_deck.push_back(Card(fv, av, id, suits[s], pv));
+            m_deck.push_back(new Card(fv, av, id, suits[s], pv));
         }
     }
 }
@@ -68,10 +68,10 @@ void Deck::makeDeck()
 void Deck::printDeck() 
 {
     int i = 0;
-    for (auto& card : m_deck) 
+    for (auto pCard : m_deck)
     {
         i++;
-        card.printCard(); 
+        pCard->printCard();
         cout << " ";
         
         if (i%13 == 0) {cout << "\n";}
@@ -87,11 +87,11 @@ void Deck::shuffle()
 }
 
 
-Card Deck::deal()
+Card* Deck::deal()
 {
-    Card c = m_deck.back();
+    Card* pCard = m_deck.back();
     m_deck.pop_back();
-    return c;
+    return pCard;
 }
 
 
@@ -123,15 +123,15 @@ void Deck::eraseDeck()
 
 
 
-void Deck::addCard(Card c)
+void Deck::addCard(Card* pCard)
 {
-    m_deck.push_back(c);
+    m_deck.push_back(pCard);
 }
 
 
-void Deck::addCardAt(Card card, int slot)
+void Deck::addCardAt(Card* pCard, int slot)
 {
-    m_deck.insert(m_deck.begin() + slot, card);
+    m_deck.insert(m_deck.begin() + slot, pCard);
 }
 
 
@@ -139,8 +139,8 @@ void Deck::printTopCard()
 {
     if (m_deck.size()>0)
     {
-        Card c = m_deck[m_deck.size() -1];
-        c.printCard();
+        Card* pCard = m_deck[m_deck.size() -1];
+        pCard->printCard();
     }
     else{
         cout << "empty";
@@ -150,13 +150,13 @@ void Deck::printTopCard()
 
 Card* Deck::getTopDeckCard()
 {
-    Card* c = &m_deck[m_deck.size() -1];
-    return c;
+    Card* pCard = m_deck[m_deck.size() - 1];
+    return pCard;
 }
 
 
 Card* Deck::getDeckCardAt(int slot)
 {
-    Card* p_c = &m_deck[slot];
-    return p_c;
+    Card* pCard = m_deck[slot];
+    return pCard;
 }

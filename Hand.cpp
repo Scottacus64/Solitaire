@@ -11,33 +11,33 @@ Hand::~Hand()
 }
 
 
-Card Hand::removeCard(int position)
+Card* Hand::removeCard(int position)
 {
     std::cout << "** H remove card, pos = " << position << "\n";
     int size = m_hand.size();
     std::cout <<"Hand size is: " << size << "\n";
-    Card c = m_hand.at(position);
+    Card* pCard = m_hand[position];
     m_hand.erase(m_hand.begin() + position);
-    return c;
+    return pCard;
 }
 
 
-void Hand::addCard(Card card)
+void Hand::addCard(Card* pCard)
 {
-    m_hand.push_back(card);
+    m_hand.push_back(pCard);
 }
 
 
-void Hand::addCardAt(Card card, int slot)
+void Hand::addCardAt(Card* pCard, int slot)
 {
-    m_hand.insert(m_hand.begin() + slot, card);
+    m_hand.insert(m_hand.begin() + slot, pCard);
 }
 
 
 Card* Hand::getCard(int position)
 {
-    Card* c = &m_hand.at(position);
-    return c;
+    Card* pCard = m_hand[position];
+    return pCard;
 }
 
 
@@ -51,9 +51,9 @@ int Hand::getSize()
 
 void Hand::printHand()
 {
-    for (auto& card : m_hand) 
+    for (auto pCard : m_hand)
     {
-        card.printCard();
+        pCard->printCard();
         std::cout << " ";
     }
 }
@@ -65,9 +65,9 @@ void Hand::sortHandValue()
 }
 
 
-bool Hand::compareByCardValue(Card& card1, Card& card2) 
+bool Hand::compareByCardValue(Card* pCard1, Card* pCard2)
 {
-    return card1.getFaceValue() < card2.getFaceValue();
+    return pCard1->getFaceValue() < pCard2->getFaceValue();
 }
 
 
@@ -76,9 +76,9 @@ void Hand::sortActualValue()
     std::sort(m_hand.begin(), m_hand.end(), compareByCardActualValue);
 }
 
-bool Hand::compareByCardActualValue(Card& card1, Card& card2) 
+bool Hand::compareByCardActualValue(Card* pCard1, Card* pCard2)
 {
-    return card1.getActualValue() < card2.getActualValue();
+    return pCard1->getActualValue() < pCard2->getActualValue();
 }
 
 
@@ -88,9 +88,9 @@ void Hand::sortHandSuit()
 }
 
 
-bool Hand::compareBySuit(Card& card1, Card& card2)
+bool Hand::compareBySuit(Card* pCard1, Card* pCard2)
 {
-    return card1.getSuit() < card2.getSuit();
+    return pCard1->getSuit() < pCard2->getSuit();
 }
 
 
@@ -100,13 +100,13 @@ void Hand::sortHandSuitAndValue()
 }
 
 
-bool Hand::compareBySuitAndCardValue(Card& card1, Card& card2)
+bool Hand::compareBySuitAndCardValue(Card* pCard1, Card* pCard2)
 {
-    if (card1.getSuit() == card2.getSuit())
+    if (pCard1->getSuit() == pCard2->getSuit())
     {
-        return card1.getFaceValue() < card2.getFaceValue();
+        return pCard1->getFaceValue() < pCard2->getFaceValue();
     }
-    return card1.getSuit() < card2.getSuit();
+    return pCard1->getSuit() < pCard2->getSuit();
 }
 
 
@@ -121,7 +121,7 @@ int Hand::getLastCardID()
     int id = -2;
     if (m_hand.size() > 0)
     {
-        id = m_hand[m_hand.size()-1].getID();
+        id = m_hand[m_hand.size()-1]->getID();
     }
     return id;
 }
@@ -132,7 +132,7 @@ int Hand::getLastCardValue()
     int value = 0;
     if (m_hand.size() > 0)
     {
-        value = m_hand[m_hand.size()-1].getFaceValue();
+        value = m_hand[m_hand.size()-1]->getFaceValue();
     }
     return value;
 }
@@ -143,7 +143,7 @@ char Hand::getLastCardSuit()
     char suit;
     if (m_hand.size() > 0)
     {
-        suit = m_hand[m_hand.size()-1].getSuit();
+        suit = m_hand[m_hand.size()-1]->getSuit();
     }
     return suit; 
 }

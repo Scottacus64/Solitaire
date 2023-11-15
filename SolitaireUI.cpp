@@ -177,12 +177,12 @@ void SolitaireUI::refreshScreen()
         Hand column = m_pSolitaire->getColumn(col);
         for (int card=0; card<column.getSize(); card++)
         {
-            Card* p_c = column.getCard(card);
-            int id = p_c->getID();              // id is the same as the cardImage value
+            Card* pCard = column.getCard(card);
+            int id = pCard->getID();              // id is the same as the cardImage value
             int pbCard = (col * 19) + card;     // there are 19 cards in a column
             m_pC[pbCard]->setEnabled(true);     // turn on the QPushButton enabled so it can be clicked
             m_pC[pbCard]->raise();              // raise the card above the hidden cards to prevent them from...
-            if (p_c->getFaceUp() == true)       // intercepting mouse clicks
+            if (pCard->getFaceUp() == true)       // intercepting mouse clicks
             {
                 m_pC[pbCard]->setIcon(QPixmap(cardImage[id]));
             }
@@ -235,9 +235,8 @@ void SolitaireUI::cardClicked()
             int slot = std::stoi(card);
             int col = slot/19;
             int row = slot%19;
-            Card* p_c = m_pSolitaire->getColCardAt(col, row);                   //find the solitaire card at this location
-            Card c = *p_c;
-            int cardID = c.getID();                                             //get the card's ID
+            Card* pCard = m_pSolitaire->getColCardAt(col, row);                   //find the solitaire card at this location
+            int cardID = pCard->getID();                                             //get the card's ID
             int colLastCardID = m_pSolitaire->getColumn(col).getLastCardID();   //get the ID of the last card in the column
             if (cardID == colLastCardID) {lastCard = true;}                     //if they are equal then we have found the last card
             if (row > 0)
@@ -247,7 +246,7 @@ void SolitaireUI::cardClicked()
                 if (flipped == false) {lastUnflippedCard = true;}
             }
             drawPileFlag = false;
-            m_pSolitaire->checkCanMove(p_c, col, row, lastCard, lastUnflippedCard);
+            m_pSolitaire->checkCanMove(pCard, col, row, lastCard, lastUnflippedCard);
         }
         /*********** if the aceStack is clicked **************/
         else if(firstChar == 'A')
@@ -258,9 +257,9 @@ void SolitaireUI::cardClicked()
             Hand aceStack = *p_aceStack;
             int size = aceStack.getSize();
             
-            Card* p_c = aceStack.getCard(size-1);
+            Card* pCard = aceStack.getCard(size-1);
             drawPileFlag = false;
-            m_pSolitaire->checkCanMove(p_c, 100, suit, true, false);
+            m_pSolitaire->checkCanMove(pCard, 100, suit, true, false);
         }
         /*********** if the draw pile or deck stack is clicked *************/
         else if(firstChar == 'D')
@@ -289,8 +288,8 @@ void SolitaireUI::cardClicked()
                 {
                     if (dpSize > 0) 
                     {
-                        Card* p_c = m_pSolitaire->getTopDrawPileCard();
-                        bool canMove = m_pSolitaire->checkCanMove(p_c, 100, 100, true, false);
+                        Card* pCard = m_pSolitaire->getTopDrawPileCard();
+                        bool canMove = m_pSolitaire->checkCanMove(pCard, 100, 100, true, false);
                         std::cout << "CanMove = " << canMove << "\n";
                         if (canMove==true) {updateDecks(1,m_pSolitaire->getDrawPileFlipped());}    // needs a fresh dpSize
                     }
@@ -427,8 +426,8 @@ void SolitaireUI::updateDecks(int deck, int cDelt)
             {
                 int slot = dpSize-1-dpFaceUp+i;                        // start with the -2 to 0 slot from the back
                 std::cout << " slot = "<< slot<< endl;;
-                Card* p_card = m_pSolitaire->getDrawPileAt(slot);   // get the Card pointer for this slot
-                int id = p_card->getID();                           // get the card's id
+                Card* pCard = m_pSolitaire->getDrawPileAt(slot);   // get the Card pointer for this slot
+                int id = pCard->getID();                           // get the card's id
                 enableDrawPile(i, id);                              // enable that draw pile deck stack
                 std::cout << "enable draw pile " << i << " *****\n";
             }
